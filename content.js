@@ -135,7 +135,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       const token = request.token;
       if (!token) {
-        sendResponse({ success: false, message: 'Missing CareerForge token. Please provide a token in the popup and try again.' });
+        sendResponse({ success: false, message: 'Missing Bhai Kaam Do token. Please provide a token in the popup and try again.' });
         return;
       }
 
