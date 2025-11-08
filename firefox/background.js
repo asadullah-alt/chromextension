@@ -1,6 +1,9 @@
-// Background service worker to navigate tabs and extract <main> HTML from details pages
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+// Background service worker for Firefox extension
+browser.runtime.onInstalled.addListener(() => {
+  // Firefox uses browser.sidebarAction instead of chrome.sidePanel
+  browser.sidebarAction.setPanel({
+    panel: 'sidebar.html'
+  });
 });
 
 function removeClassesAndStyles(element) {
@@ -36,7 +39,7 @@ function waitForTabComplete(tabId, timeout = 25000) {
       if (tab.status === 'complete') {
         // Add 5 second delay after tab reports complete status
         setTimeout(() => {
-          chrome.tabs.get(tabId, (finalTab) => {
+          browser.tabs.get(tabId).then(finalTab => {
             if (!finalTab) return reject(new Error('Tab not found'));
             resolve(finalTab);
           });
@@ -44,9 +47,11 @@ function waitForTabComplete(tabId, timeout = 25000) {
         return;
       }
       if (Date.now() - start > timeout) return reject(new Error('Timeout waiting for tab load'));
-      setTimeout(() => chrome.tabs.get(tabId, checkStatus), 200);
+      setTimeout(() => {
+        browser.tabs.get(tabId).then(checkStatus);
+      }, 200);
     }
-    chrome.tabs.get(tabId, checkStatus);
+    browser.tabs.get(tabId).then(checkStatus);
   });
 }
 
@@ -100,28 +105,23 @@ function extractLinkedInExperience(mainElement) {
   return experiences;
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  
-
-  // New handler: fetch multiple details pages SEQUENTIALLY (one at a time)
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message && message.action === 'fetchMultipleDetails') {
     const { base, paths } = message;
     (async () => {
       try {
         if (!base || !paths || !Array.isArray(paths)) {
-          sendResponse({ success: false, message: 'Missing base or paths' });
-          return;
+          return { success: false, message: 'Missing base or paths' };
         }
 
         // Helper that creates a hidden tab, extracts <main>, then closes it
         const extractInHiddenTab = async (url, p) => {
-          const created = await chrome.tabs.create({ url, active: true });
+          const created = await browser.tabs.create({ url, active: true });
           const tabId = created.id;
           try {
-            // Wait 15 seconds for the page to fully load
             await waitForTabComplete(tabId, 15000);
             
-            const results = await chrome.scripting.executeScript({
+            const results = await browser.scripting.executeScript({
               target: { tabId },
               func: (timeoutMs, pathURL) => {
                  return new Promise((resolve) => {
@@ -147,14 +147,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return { success: false, message: e.message || String(e) };
           } finally {
             try { 
-              await chrome.tabs.remove(tabId); 
+              await browser.tabs.remove(tabId); 
             } catch (e) { 
               /* ignore */ 
             }
           }
         };
 
-        // Process each path SEQUENTIALLY instead of in parallel
         const out = {};
         
         for (const p of paths) {
@@ -170,13 +169,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             };
           }
           
-          // Optional: Add a small delay between tabs to be extra safe
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
-        sendResponse({ success: true, results: out });
+        return { success: true, results: out };
       } catch (e) {
-        sendResponse({ success: false, message: e.message || String(e) });
+        return { success: false, message: e.message || String(e) };
       }
     })();
 
