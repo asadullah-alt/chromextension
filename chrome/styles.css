@@ -1,0 +1,248 @@
+/* Base styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+  width: 200px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 16px 0;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: #2563eb;
+  background: #f1f5f9;
+}
+
+.nav-link.active {
+  color: #2563eb;
+  background: #eff6ff;
+  border-right: 2px solid #2563eb;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  margin-left: 200px;
+  padding: 24px;
+  max-width: calc(100% - 200px);
+}
+
+/* Cards and Components */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.header p {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Status Messages */
+.status {
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+  display: none;
+}
+
+.status.show {
+  display: block;
+  animation: slideIn 0.3s ease-out;
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.status.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.status.info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Checkbox Grid */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #94a3b8;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+}
+
+/* Responsive adjustments for narrow sidepanel */
+@media (max-width: 400px) {
+  .sidebar {
+    width: 60px;
+  }
+  
+  .nav-link span {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 60px;
+    max-width: calc(100% - 60px);
+  }
+  
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}
